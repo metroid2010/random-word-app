@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AppDeRobert</string>
+    <string name="WordTextViewDefault">Press \'Generate\' to create a random set of words.</string>
+    <string name="generate_passwords_button">Generate Password</string>
+    <string name="english_lang_button_text">English</string>
+    <string name="spanish_lang_button_text">Spanish</string>
+
+</resources>
