@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void generatePass(View view) {
         TextView tv = findViewById(R.id.wordTextView);
-        tv.setText(wordListGen.getRandomWordCollectionStr());
+        tv.setText(wordListGen.getRandomWordCollection());
     }
 
     /**
@@ -61,5 +62,11 @@ public class MainActivity extends AppCompatActivity {
             return RandomWordListGenerator.SPANISH;
 
         return -1;
+    }
+
+    public void switchApostrophe(View view) {
+        CheckBox apostrBox = findViewById(R.id.apostrophe);
+        RandomWordListGenerator.apostrophe = !RandomWordListGenerator.apostrophe;
+        apostrBox.setChecked(RandomWordListGenerator.apostrophe);
     }
 }

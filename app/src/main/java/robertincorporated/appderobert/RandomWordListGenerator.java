@@ -25,6 +25,7 @@ import java.util.Vector;
  *
  * */
 public class RandomWordListGenerator {
+
     public static final int ENGLISH = 0;
     public static final int SPANISH = 1;
     private static final int EN_DICFILE = R.raw.american_english; //= "src/main/res/raw/american_english";
@@ -33,11 +34,16 @@ public class RandomWordListGenerator {
     private int selectedLanguage;
     private int collectionLength;
 
-    private Vector<String> wordVector;
     private LinkedList<String> dictionary;
+    private Vector<String> wordVector = new Vector<String>();
     private Resources resHandle;
 
+    // initialize options
+    public static Boolean apostrophe = false;
+    public static Boolean lowercase = false;
+
     public RandomWordListGenerator(int language, int collectionSize, Resources resourceHandler){
+
         int dic_file;
         switch (language) {
             case ENGLISH:
@@ -52,12 +58,12 @@ public class RandomWordListGenerator {
                 throw new IllegalArgumentException("Language not defined.");
         }
 
-        if (collectionSize <= 0)
+        if (collectionSize <= 0) {
             throw new IllegalArgumentException("Collection size must be strictly positive.");
-        else
+        } else {
             collectionLength = collectionSize;
+        }
 
-        wordVector = new Vector<>(collectionLength);
         dictionary = new LinkedList<>();
         resHandle = resourceHandler;
 
@@ -79,26 +85,11 @@ public class RandomWordListGenerator {
      * Getter for previously generated word collection.
      * @return Vector<String>
      */
-    public Vector<String> getCurrentWordCollection() {
-        if (wordVector.isEmpty() ) {
+    public String getCurrentWordCollection() {
+        if ( wordVector.isEmpty() ) {
             return getRandomWordCollection();
         }
-        return wordVector;
-    }
-
-    /**
-     * Will generate and return a word collection vector of the initialized language and size.
-     * Previous word collections will be cleared.
-     * @return Vector<String>
-     */
-    private Vector<String> getRandomWordCollection() {
-
-         wordVector.clear();
-
-        for (int i=0; i<collectionLength; i++)
-            wordVector.addElement(getRandomWord());
-
-        return wordVector;
+        return wordVectorToString();
     }
 
     /**
@@ -107,23 +98,69 @@ public class RandomWordListGenerator {
      * @return String
      */
     private String getRandomWord() {
-        Random randg = new Random();
-        int ind = randg.nextInt(dictionary.size());
 
-        return dictionary.get(ind);
+        // generate random number
+        Random randg = new Random();
+        // initialize word to return
+        String randomWord = "";
+
+        // get random index, find word in dictionary on that index
+        // keep getting random words if they contain an apostrophe
+        //          and the apostr bit is not set
+        Boolean found = false;
+        do {
+            int ind = randg.nextInt(dictionary.size());
+            randomWord = dictionary.get(ind);
+            if ( apostrophe == false && randomWord.contains("'") ) {
+                found = false;
+            } else {
+                found = true;
+            }
+        } while ( !found );
+
+        if ( lowercase == true ) {
+            randomWord = randomWord.toLowerCase();
+        }
+
+        return randomWord;
     }
 
-    public String getRandomWordCollectionStr() {
+    /**
+     * Will generate and return a word collection vector of the initialized language and size.
+     * Previous word collections will be cleared.
+     * @return String
+     */
+    public String getRandomWordCollection() {
+
+        if ( wordVector.isEmpty() == false ) {
+            wordVector.clear();
+        }
+
+        for (int i=0; i<collectionLength; i++) {
+            wordVector.addElement(getRandomWord());
+        }
+
+        return wordVectorToString();
+    }
+
+    /**
+     * Convert wordVector to a string, adding spaces between words
+     * @return String
+     */
+    private String wordVectorToString() {
 
         String wordStr = "";
-        Vector<String> wv = getRandomWordCollection();
 
-        for ( int i = 0; i < wv.size(); i++ ) {
-            wordStr = wordStr.concat( wv.get(i) + " " );
+        for ( int i = 0; i < wordVector.size(); i++ ) {
+            // do not add space if it is the last word
+            if ( i == ( wordVector.size() - 1 ) ) {
+                wordStr = wordStr.concat(wordVector.get(i));
+            } else {
+                wordStr = wordStr.concat(wordVector.get(i) + " ");
+            }
         }
 
         return wordStr;
     }
-
 
 }
