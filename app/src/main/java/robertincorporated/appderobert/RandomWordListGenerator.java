@@ -80,8 +80,9 @@ public class RandomWordListGenerator {
      * @return Vector<String>
      */
     public Vector<String> getCurrentWordCollection() {
-        if (wordVector.isEmpty())
+        if (wordVector.isEmpty() ) {
             return getRandomWordCollection();
+        }
         return wordVector;
     }
 
@@ -90,12 +91,12 @@ public class RandomWordListGenerator {
      * Previous word collections will be cleared.
      * @return Vector<String>
      */
-    public Vector<String> getRandomWordCollection() {
+    private Vector<String> getRandomWordCollection() {
 
-        wordVector.clear();
+         wordVector.clear();
 
         for (int i=0; i<collectionLength; i++)
-            wordVector.add(getRandomWord());
+            wordVector.addElement(getRandomWord());
 
         return wordVector;
     }
@@ -110,6 +111,18 @@ public class RandomWordListGenerator {
         int ind = randg.nextInt(dictionary.size());
 
         return dictionary.get(ind);
+    }
+
+    public String getRandomWordCollectionStr() {
+
+        String wordStr = "";
+        Vector<String> wv = getRandomWordCollection();
+
+        for ( int i = 0; i < wv.size(); i++ ) {
+            wordStr = wordStr.concat( wv.get(i) + " " );
+        }
+
+        return wordStr;
     }
 
 

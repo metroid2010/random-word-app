@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TextView tv = findViewById(R.id.wordTextView);
 
         Button langButton = findViewById(R.id.langButton);
         SelectLanguage = langButton.getText().toString();
@@ -30,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
      * Button event to generate new password phrase.
      */
     public void generatePass(View view) {
-        // Select at least 4 random words with repetition.
-        // Set text view to show those 4 random views.
+        TextView tv = findViewById(R.id.wordTextView);
+        tv.setText(wordListGen.getRandomWordCollectionStr());
     }
 
     /**
