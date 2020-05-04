@@ -1,17 +1,28 @@
 package robertincorporated.appderobert;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private RandomWordListGenerator wordListGen;
-    private String SelectLanguage;
+    private int SelectLanguage;
     private int collectionSize = 4;
+    private static String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,13 +31,38 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tv = findViewById(R.id.wordTextView);
 
-        Button langButton = findViewById(R.id.langButton);
-        SelectLanguage = langButton.getText().toString();
+        // setup our word generator
         wordListGen = new RandomWordListGenerator(
-                getLanguage(),      // Selected language on the view
+                SelectLanguage,      // Selected language on the view
                 collectionSize,     // At least 4.
                 getResources()      // System resources to access the dictionaries.
         );
+
+        // setup language spinner
+        Spinner langSpinner = findViewById(R.id.langSpinner);
+        ArrayAdapter<String> langSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, RandomWordListGenerator.langs);
+        langSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        langSpinner.setAdapter(langSpinnerAdapter);
+        langSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (parent.getItemAtPosition(position).toString()) {
+                    case "ENG":
+                        SelectLanguage = 0;
+                        break;
+                    case "SPA":
+                        SelectLanguage = 1;
+                        break;
+                    default:
+                        SelectLanguage = 0;
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
     }
 
@@ -35,33 +71,8 @@ public class MainActivity extends AppCompatActivity {
      */
     public void generatePass(View view) {
         TextView tv = findViewById(R.id.wordTextView);
-        tv.setText(wordListGen.getRandomWordCollection());
-    }
-
-    /**
-     * Changes the language of the generated word set.
-     */
-    public void changeLang(View view) {
-        Button langButton = findViewById(R.id.langButton);
-        String language = langButton.getText().toString();
-
-        if (language.equals("English")){
-            langButton.setText(R.string.spanish_lang_button_text);
-            SelectLanguage = "Spanish";
-        }
-        else if (language.equals("Spanish")) {
-            langButton.setText(R.string.english_lang_button_text);
-            SelectLanguage = "English";
-        }
-    }
-
-    private int getLanguage() {
-        if (SelectLanguage.equals("English"))
-            return RandomWordListGenerator.ENGLISH;
-        if (SelectLanguage.equals("Spanish"))
-            return RandomWordListGenerator.SPANISH;
-
-        return -1;
+        password = wordListGen.getRandomWordCollection();
+        tv.setText(password);
     }
 
     public void switchApostrophe(View view) {
@@ -69,4 +80,15 @@ public class MainActivity extends AppCompatActivity {
         RandomWordListGenerator.apostrophe = !RandomWordListGenerator.apostrophe;
         apostrBox.setChecked(RandomWordListGenerator.apostrophe);
     }
+
+    public void copyToClipboard(View view) {
+        String label = "owowhatsthis";
+        Button ctcbButton = findViewById(R.id.copyToCBButton);
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, password);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(MainActivity.this, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
+
+    }
+
 }

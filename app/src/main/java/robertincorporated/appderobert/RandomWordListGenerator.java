@@ -28,6 +28,7 @@ public class RandomWordListGenerator {
 
     public static final int ENGLISH = 0;
     public static final int SPANISH = 1;
+    public static final String[] langs = {"ENG", "SPA"};
     private static final int EN_DICFILE = R.raw.american_english; //= "src/main/res/raw/american_english";
     private static final int ES_DICFILE = R.raw.spanish; //= "src/main/res/raw/spanish";
 
