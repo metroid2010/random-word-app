@@ -20,7 +20,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private RandomWordListGenerator wordListGen;
-    private int SelectLanguage;
+    private int SelectLanguage = 0;
     private int collectionSize = 4;
     private static String password;
 
@@ -33,10 +33,11 @@ public class MainActivity extends AppCompatActivity {
 
         // setup our word generator
         wordListGen = new RandomWordListGenerator(
-                SelectLanguage,      // Selected language on the view
-                collectionSize,     // At least 4.
-                getResources()      // System resources to access the dictionaries.
+                getResources(),      // Selected language on the view
+                SelectLanguage     // At least 4
         );
+
+        wordListGen.setCollectionLength(collectionSize);
 
         // setup language spinner
         Spinner langSpinner = findViewById(R.id.langSpinner);
@@ -49,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (parent.getItemAtPosition(position).toString()) {
                     case "ENG":
                         SelectLanguage = 0;
+                        wordListGen.changeDictionary(SelectLanguage);
                         break;
                     case "SPA":
                         SelectLanguage = 1;
+                        wordListGen.changeDictionary(SelectLanguage);
                         break;
                     default:
                         SelectLanguage = 0;
@@ -82,13 +85,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void copyToClipboard(View view) {
-        String label = "owowhatsthis";
+        String label = "password";
         Button ctcbButton = findViewById(R.id.copyToCBButton);
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(label, password);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(MainActivity.this, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
-
     }
 
 }

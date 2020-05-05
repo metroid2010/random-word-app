@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 /**
  * The purpose of this class is to create a collection of words that can
@@ -32,54 +33,22 @@ public class RandomWordListGenerator {
     private static final int EN_DICFILE = R.raw.american_english; //= "src/main/res/raw/american_english";
     private static final int ES_DICFILE = R.raw.spanish; //= "src/main/res/raw/spanish";
 
-    private int selectedLanguage;
+    private static int selectedLanguage;
     private int collectionLength;
 
-    private LinkedList<String> dictionary;
+    private static LinkedList<String> dictionary;
     private Vector<String> wordVector = new Vector<String>();
-    private Resources resHandle;
+    private static Resources _resHandle;
 
     // initialize options
     public static Boolean apostrophe = false;
     public static Boolean lowercase = false;
 
-    public RandomWordListGenerator(int language, int collectionSize, Resources resourceHandler){
+    private static final String LOG_TAG = RandomWordListGenerator.class.getName();
 
-        int dic_file;
-        switch (language) {
-            case ENGLISH:
-                selectedLanguage = ENGLISH;
-                dic_file = EN_DICFILE;
-                break;
-            case SPANISH:
-                selectedLanguage = SPANISH;
-                dic_file = ES_DICFILE;
-                break;
-            default:
-                throw new IllegalArgumentException("Language not defined.");
-        }
-
-        if (collectionSize <= 0) {
-            throw new IllegalArgumentException("Collection size must be strictly positive.");
-        } else {
-            collectionLength = collectionSize;
-        }
-
-        dictionary = new LinkedList<>();
-        resHandle = resourceHandler;
-
-        // Read the dictionary.
-        InputStream in = resourceHandler.openRawResource(dic_file);
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-            String word_line;
-            while ((word_line = br.readLine()) != null) {
-                dictionary.add(word_line);
-            }
-        }
-        catch (Exception exception) {
-            Log.d(this.getClass().getSimpleName(), "Error reading dictionary file.");
-            Log.d(this.getClass().getSimpleName(), exception.getMessage());
-        }
+    public RandomWordListGenerator( Resources resHandle , int newLanguage ){
+        _resHandle = resHandle;
+        loadDictionary(newLanguage);
     }
 
     /**
@@ -163,5 +132,49 @@ public class RandomWordListGenerator {
 
         return wordStr;
     }
+
+    public static void loadDictionary(int language) {
+
+        int dic_file;
+        switch (language) {
+            case ENGLISH:
+                selectedLanguage = ENGLISH;
+                dic_file = EN_DICFILE;
+                break;
+            case SPANISH:
+                selectedLanguage = SPANISH;
+                dic_file = ES_DICFILE;
+                break;
+            default:
+                throw new IllegalArgumentException("Language not defined.");
+        }
+
+        dictionary = new LinkedList<>();
+
+        // Read the dictionary.
+        InputStream in = _resHandle.openRawResource(dic_file);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String word_line;
+            while ((word_line = br.readLine()) != null) {
+                dictionary.add(word_line);
+            }
+        }
+        catch (Exception exception) {
+            Log.d(LOG_TAG, "Error reading dictionary file.");
+            Log.d(LOG_TAG, exception.getMessage());
+        }
+
+        Log.d(LOG_TAG, "Dictionary " + selectedLanguage + " loaded successfully");
+    }
+
+    public static void changeDictionary(int newLanguage) {
+        selectedLanguage = newLanguage;
+        loadDictionary(selectedLanguage);
+    }
+
+    public void setCollectionLength(int length) {
+        collectionLength = length;
+    }
+
 
 }
